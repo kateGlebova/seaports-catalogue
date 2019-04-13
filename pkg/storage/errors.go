@@ -1,19 +1,13 @@
 package storage
 
-import "fmt"
-
-type ErrPortNotFound struct {
-	ID string
-}
+type ErrPortNotFound struct{}
 
 func (e ErrPortNotFound) Error() string {
-	return fmt.Sprintf("Port %s not found", e.ID)
+	return "port not found"
 }
 
-type ErrPortAlreadyExists struct {
-	ID string
-}
+type ErrPortAlreadyExists struct{}
 
 func (e ErrPortAlreadyExists) Error() string {
-	return fmt.Sprintf("Port %s already exists", e.ID)
+	return "port already exists"
 }

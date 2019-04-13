@@ -9,17 +9,12 @@ type Service interface {
 }
 
 type service struct {
-	repository entities.PortRepository
+	// grpc client connection
 }
 
 func (s service) AddPorts(ports ...entities.Port) (err error) {
-	for _, port := range ports {
-		err = s.repository.SavePort(port)
-		if err != nil {
-			return
-		}
-	}
-	return
+	// grpc request to add port
+	return nil
 }
 
 func NewService() Service {

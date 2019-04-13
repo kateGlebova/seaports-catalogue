@@ -10,15 +10,17 @@ type Service interface {
 }
 
 type service struct {
-	repository entities.PortRepository
+	// grpc client connection
 }
 
 func (s service) RetrievePort(id string) entities.Port {
-	return s.repository.GetPort(id)
+	// grpc request to retrieve the port
+	return entities.Port{}
 }
 
 func (s service) RetrieveAllPorts() []entities.Port {
-	return s.repository.GetAllPorts()
+	// grpc request to retrieve all ports
+	return []entities.Port{}
 }
 
 func NewService() Service {

@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"syscall"
 	"time"
+
+	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
 
 	"github.com/gorilla/handlers"
 	"github.com/kateGlebova/seaports-catalogue/pkg/parsing"
@@ -29,16 +30,16 @@ func NewClientAPI(p parsing.Service, r retrieving.Service, handler http.Handler,
 	return &ClientAPI{parser: p, retriever: r, server: server, port: port}
 }
 
-// Run starts listening and serving incoming HTTP requests
+// Run starts ClientAPI HTTP server
 func (api *ClientAPI) Run() {
 	log.Printf("Listening on %s...", api.port)
 	if err := api.server.ListenAndServe(); err != http.ErrServerClosed {
 		api.err = err
-		killTheApp()
+		shutdown.KillTheApp()
 	}
 }
 
-//Stop attempts to gracefully stop API server with timeout
+// Stop attempts to gracefully stop API server with timeout
 func (api *ClientAPI) Stop() (err error) {
 	if api.err != nil {
 		return api.err
@@ -52,10 +53,4 @@ func (api *ClientAPI) Stop() (err error) {
 		log.Print("ClientAPI stopped")
 	}
 	return
-}
-
-// killTheApp sends SIGTERM to the parent application to quit
-func killTheApp() {
-	pid := syscall.Getpid()
-	syscall.Kill(pid, syscall.SIGTERM)
 }

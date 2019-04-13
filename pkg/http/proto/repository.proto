@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package proto;
+
+service Repository{
+    rpc ListPorts(ListRequest) returns (stream Port) {}
+    rpc GetPort(Port) returns (Port) {}
+    rpc CreatePort(Port) returns (Empty) {}
+    rpc UpdatePort(Port) returns (Empty) {}
+    rpc CreateOrUpdatePorts(stream Port) returns (Empty) {}
+}
+
+message Port {
+    string id = 1;
+    string name = 2;
+    string city = 3;
+    string country = 4;
+    repeated string alias = 5;
+    repeated string regions = 6;
+    repeated double coordinates = 7;
+    string province = 8;
+    string timezone = 9;
+    repeated string unlocs = 10;
+    string code = 11;
+}
+
+message Empty {}
+
+message ListRequest {
+    uint64 limit = 1;
+    uint64 offset = 2;
+}
