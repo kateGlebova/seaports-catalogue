@@ -3,11 +3,11 @@ syntax = "proto3";
 package proto;
 
 service Repository{
-    rpc ListPorts(ListRequest) returns (stream Port) {}
+    rpc ListPorts(ListRequest) returns (Ports) {}
     rpc GetPort(Port) returns (Port) {}
     rpc CreatePort(Port) returns (Empty) {}
     rpc UpdatePort(Port) returns (Empty) {}
-    rpc CreateOrUpdatePorts(stream Port) returns (Empty) {}
+    rpc CreateOrUpdatePorts(Ports) returns (Empty) {}
 }
 
 message Port {
@@ -22,6 +22,10 @@ message Port {
     string timezone = 9;
     repeated string unlocs = 10;
     string code = 11;
+}
+
+message Ports {
+    repeated Port ports = 1;
 }
 
 message Empty {}

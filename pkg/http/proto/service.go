@@ -2,7 +2,6 @@ package proto
 
 import (
 	"context"
-	"io"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,7 +22,7 @@ func NewRepositoryService(portRepo entities.PortRepository) *RepositoryService {
 	return &RepositoryService{portRepo: portRepo}
 }
 
-func (s RepositoryService) ListPorts(r *ListRequest, stream Repository_ListPortsServer) error {
+func (s RepositoryService) ListPorts(_ context.Context, r *ListRequest) (*Ports, error) {
 	limit, offset := uint(r.Limit), uint(r.Offset)
 	if limit == 0 {
 		limit = DefaultLimit
@@ -32,12 +31,12 @@ func (s RepositoryService) ListPorts(r *ListRequest, stream Repository_ListPorts
 		offset = DefaultOffset
 	}
 
+	ports := make([]*Port, 0, limit)
+
 	for _, port := range s.portRepo.GetAllPorts(limit, offset) {
-		if err := stream.Send(DomainToProtoPort(port)); err != nil {
-			return err
-		}
+		ports = append(ports, DomainToProtoPort(port))
 	}
-	return nil
+	return &Ports{Ports: ports}, nil
 }
 
 func (s RepositoryService) GetPort(_ context.Context, port *Port) (*Port, error) {
@@ -66,20 +65,17 @@ func (s RepositoryService) UpdatePort(_ context.Context, port *Port) (*Empty, er
 	return &Empty{}, nil
 }
 
-func (s RepositoryService) CreateOrUpdatePorts(stream Repository_CreateOrUpdatePortsServer) error {
-	for {
-		port, err := stream.Recv()
-		if err == io.EOF {
-			return stream.SendAndClose(&Empty{})
-		}
-		if err != nil {
-			return err
-		}
-		err = s.portRepo.CreateOrUpdate(ProtoToDomainPort(port))
-		if err != nil {
-			return gRPCError(err)
-		}
+func (s RepositoryService) CreateOrUpdatePorts(_ context.Context, ports *Ports) (*Empty, error) {
+	ps := make([]entities.Port, 0, len(ports.Ports))
+	for _, port := range ports.Ports {
+		ps = append(ps, ProtoToDomainPort(port))
 	}
+
+	err := s.portRepo.CreateOrUpdatePorts(ps...)
+	if err != nil {
+		return &Empty{}, gRPCError(err)
+	}
+	return &Empty{}, nil
 }
 
 func gRPCError(err error) error {

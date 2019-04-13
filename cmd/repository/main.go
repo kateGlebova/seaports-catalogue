@@ -9,7 +9,7 @@ import (
 	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
 	"github.com/kateGlebova/seaports-catalogue/pkg/storage/inmem"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
+	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )
 
 func main() {
@@ -19,8 +19,8 @@ func main() {
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)
-	signal.Notify(signalChan, shutdown.GracefulShutdownSignals...)
-	go shutdown.SignalHandle(signalChan, exitChan, portDomainSvc.Stop)
+	signal.Notify(signalChan, lifecycle.GracefulShutdownSignals...)
+	go lifecycle.SignalHandle(signalChan, exitChan, portDomainSvc.Stop)
 	go portDomainSvc.Run()
 	code := <-exitChan
 	os.Exit(code)

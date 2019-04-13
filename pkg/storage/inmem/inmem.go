@@ -60,10 +60,12 @@ func (r Repository) UpdatePort(port entities.Port) error {
 	return nil
 }
 
-func (r Repository) CreateOrUpdate(port entities.Port) error {
+func (r Repository) CreateOrUpdatePorts(ports ...entities.Port) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.ports[port.ID] = port
+	for _, port := range ports {
+		r.ports[port.ID] = port
+	}
 	return nil
 }

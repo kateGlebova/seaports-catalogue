@@ -19,5 +19,5 @@ type PortRepository interface {
 	GetAllPorts(limit, offset uint) []Port
 	CreatePort(Port) error
 	UpdatePort(Port) error
-	CreateOrUpdate(Port) error
+	CreateOrUpdatePorts(...Port) error
 }

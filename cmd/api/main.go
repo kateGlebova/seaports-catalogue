@@ -4,23 +4,27 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
+
 	"github.com/kateGlebova/seaports-catalogue/pkg/http/rest"
 
 	"github.com/kateGlebova/seaports-catalogue/internal/api"
-	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
+	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )
 
 func main() {
 	parser := rest.MockParser{}
-	retriever := rest.MockRetriever{}
-	handler := rest.NewHandler(retriever)
-	a := api.NewClientAPI(parser, retriever, handler, "8080")
+	managingSvc := managing.NewService(":9090")
+	handler := rest.NewHandler(managingSvc)
+	a := api.NewClientAPI(parser, handler, "8080")
+
+	runner := lifecycle.NewRunner(a, managingSvc.(lifecycle.Runnable))
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)
-	signal.Notify(signalChan, shutdown.GracefulShutdownSignals...)
-	go shutdown.SignalHandle(signalChan, exitChan, a.Stop)
-	go a.Run()
+	signal.Notify(signalChan, lifecycle.GracefulShutdownSignals...)
+	go lifecycle.SignalHandle(signalChan, exitChan, runner.Stop)
+	go runner.Run()
 	code := <-exitChan
 	os.Exit(code)
 }

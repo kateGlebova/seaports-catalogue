@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
-	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
+	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 	"google.golang.org/grpc"
 )
 
@@ -29,12 +29,12 @@ func (r *PortDomainService) Run() {
 	lis, err := net.Listen("tcp", ":"+r.port)
 	if err != nil {
 		r.err = err
-		shutdown.KillTheApp()
+		lifecycle.KillTheApp()
 	}
 
 	if err = r.server.Serve(lis); err != grpc.ErrServerStopped {
 		r.err = err
-		shutdown.KillTheApp()
+		lifecycle.KillTheApp()
 	}
 }
 

@@ -7,27 +7,25 @@ import (
 	"os"
 	"time"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
+	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 
 	"github.com/gorilla/handlers"
 	"github.com/kateGlebova/seaports-catalogue/pkg/parsing"
-	"github.com/kateGlebova/seaports-catalogue/pkg/retrieving"
 )
 
 const ShutdownTimeout = 5 * time.Second
 
 type ClientAPI struct {
-	server    *http.Server
-	parser    parsing.Service
-	retriever retrieving.Service
+	server  *http.Server
+	parsing parsing.Service
 
 	port string
 	err  error
 }
 
-func NewClientAPI(p parsing.Service, r retrieving.Service, handler http.Handler, port string) *ClientAPI {
+func NewClientAPI(p parsing.Service, handler http.Handler, port string) *ClientAPI {
 	server := &http.Server{Addr: ":" + port, Handler: handlers.LoggingHandler(os.Stdout, handler)}
-	return &ClientAPI{parser: p, retriever: r, server: server, port: port}
+	return &ClientAPI{parsing: p, server: server, port: port}
 }
 
 // Run starts ClientAPI HTTP server
@@ -35,7 +33,7 @@ func (api *ClientAPI) Run() {
 	log.Printf("Listening on %s...", api.port)
 	if err := api.server.ListenAndServe(); err != http.ErrServerClosed {
 		api.err = err
-		shutdown.KillTheApp()
+		lifecycle.KillTheApp()
 	}
 }
 

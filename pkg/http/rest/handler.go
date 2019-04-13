@@ -6,20 +6,29 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/kateGlebova/seaports-catalogue/pkg/retrieving"
+	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
 )
 
-func NewHandler(retriever retrieving.Service) http.Handler {
+func NewHandler(manager managing.Service) http.Handler {
 	r := mux.NewRouter()
-	r.HandleFunc("/ports", getPorts(retriever)).Methods(http.MethodGet)
-	r.HandleFunc("/ports/{port}", getPort(retriever)).Methods(http.MethodGet)
+	r.HandleFunc("/ports", getPorts(manager)).Methods(http.MethodGet)
+	r.HandleFunc("/ports/{port}", getPort(manager)).Methods(http.MethodGet)
 	return r
 }
 
-func getPorts(retriever retrieving.Service) func(w http.ResponseWriter, r *http.Request) {
+func getPorts(manager managing.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ports := retriever.RetrieveAllPorts()
-		err := json.NewEncoder(w).Encode(ports)
+		ports, err := manager.ListPorts(10, 0)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
+			json.NewEncoder(w).Encode(Response{
+				Code:    http.StatusInternalServerError,
+				Message: msg,
+			})
+			return
+		}
+		err = json.NewEncoder(w).Encode(ports)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
@@ -32,10 +41,19 @@ func getPorts(retriever retrieving.Service) func(w http.ResponseWriter, r *http.
 	}
 }
 
-func getPort(retriever retrieving.Service) func(w http.ResponseWriter, r *http.Request) {
+func getPort(manager managing.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		port := retriever.RetrievePort("AEAJM")
-		err := json.NewEncoder(w).Encode(port)
+		port, err := manager.GetPort("AEAJM")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
+			json.NewEncoder(w).Encode(Response{
+				Code:    http.StatusInternalServerError,
+				Message: msg,
+			})
+			return
+		}
+		err = json.NewEncoder(w).Encode(port)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
