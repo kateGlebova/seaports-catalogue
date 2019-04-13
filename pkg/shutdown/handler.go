@@ -1,7 +1,7 @@
 package shutdown
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"syscall"
 )
@@ -19,6 +19,7 @@ func SignalHandle(signal <-chan os.Signal, exit chan<- int, stop func() error, s
 			if s == sgnl {
 				err := stop()
 				if err != nil {
+					log.Printf("Error stopping the app: %v", err)
 					exit <- 1
 				} else {
 					exit <- 0
@@ -27,7 +28,7 @@ func SignalHandle(signal <-chan os.Signal, exit chan<- int, stop func() error, s
 			}
 		}
 
-		fmt.Printf("Unsupported signal: %s\n", s)
+		log.Printf("Unsupported signal: %s\n", s)
 		exit <- -1
 	}
 }

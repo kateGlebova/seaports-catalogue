@@ -1,6 +1,6 @@
 // +build unit
 
-package api
+package rest
 
 import (
 	"encoding/json"
@@ -16,15 +16,15 @@ import (
 var clientAPI *ClientAPI
 
 func TestMain(m *testing.M) {
-	clientApi = NewClientAPI(mockParser{}, mockRepo{}, "")
-	clientAPI.InitialiseServer()
+	retriever := MockRetriever{}
+	router := NewHandler(retriever)
 
 	m.Run()
 }
 
 func TestClientAPI_GetPorts(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, "/ports", nil)
-	response := ExecuteRequest(api.Router, req)
+	response := ExecuteRequest(router, req)
 
 	CheckResponseCode(t, http.StatusOK, response.Code)
 

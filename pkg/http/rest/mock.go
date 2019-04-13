@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"os"
@@ -16,20 +16,12 @@ func (p MockParser) Parse(*os.File) []entities.Port {
 	return []entities.Port{mockPort}
 }
 
-type MockRepo struct{}
+type MockRetriever struct{}
 
-func (r MockRepo) Get(id string) entities.Port {
+func (r MockRetriever) RetrievePort(id string) entities.Port {
 	return mockPort
 }
 
-func (r MockRepo) GetAll() []entities.Port {
+func (r MockRetriever) RetrieveAllPorts() []entities.Port {
 	return []entities.Port{mockPort}
-}
-
-func (r MockRepo) GetLimited(limit int) []entities.Port {
-	return []entities.Port{mockPort}
-}
-
-func (r MockRepo) Save(...entities.Port) error {
-	return nil
 }

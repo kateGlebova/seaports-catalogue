@@ -4,16 +4,17 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/http/rest"
+
 	"github.com/kateGlebova/seaports-catalogue/internal/api"
 	"github.com/kateGlebova/seaports-catalogue/pkg/shutdown"
 )
 
 func main() {
-	parser := api.MockParser{}
-	repo := api.MockRepo{}
-	a := api.NewClientAPI(parser, repo, "8080")
-	a.InitialiseServer()
-	//a.Run()
+	parser := rest.MockParser{}
+	retriever := rest.MockRetriever{}
+	handler := rest.NewHandler(retriever)
+	a := api.NewClientAPI(parser, retriever, handler, "8080")
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)

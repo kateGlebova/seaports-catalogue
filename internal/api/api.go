@@ -4,42 +4,34 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"syscall"
 	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-	"github.com/kateGlebova/seaports-catalogue/pkg/parser"
+	"github.com/gorilla/handlers"
+	"github.com/kateGlebova/seaports-catalogue/pkg/parsing"
+	"github.com/kateGlebova/seaports-catalogue/pkg/retrieving"
 )
 
 const ShutdownTimeout = 5 * time.Second
 
 type ClientAPI struct {
-	server     *http.Server
-	parser     parser.Service
-	repository entities.PortRepository
+	server    *http.Server
+	parser    parsing.Service
+	retriever retrieving.Service
 
 	port string
 	err  error
 }
 
-func NewClientAPI(p parser.Service, r entities.PortRepository, port string) *ClientAPI {
-	return &ClientAPI{parser: p, repository: r, port: port}
-}
-
-func (api *ClientAPI) InitialiseServer() {
-	api.server = &http.Server{Addr: ":" + api.port, Handler: api.NewRouter()}
-}
-
-func (api *ClientAPI) NewRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/ports", api.GetPorts)
-	r.HandleFunc("/ports/{port}", api.GetPort)
-	return r
+func NewClientAPI(p parsing.Service, r retrieving.Service, handler http.Handler, port string) *ClientAPI {
+	server := &http.Server{Addr: ":" + port, Handler: handlers.LoggingHandler(os.Stdout, handler)}
+	return &ClientAPI{parser: p, retriever: r, server: server, port: port}
 }
 
 // Run starts listening and serving incoming HTTP requests
 func (api *ClientAPI) Run() {
+	log.Printf("Listening on %s...", api.port)
 	if err := api.server.ListenAndServe(); err != http.ErrServerClosed {
 		api.err = err
 		killTheApp()
@@ -55,10 +47,9 @@ func (api *ClientAPI) Stop() (err error) {
 		ctx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
 		defer cancel()
 		if err = api.server.Shutdown(ctx); err != nil {
-			log.Fatalf("Stoping ClientAPI error: %v\n", err)
-		} else {
-			log.Print("ClientAPI stopped")
+			return err
 		}
+		log.Print("ClientAPI stopped")
 	}
 	return
 }

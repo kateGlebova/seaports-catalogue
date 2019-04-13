@@ -1,4 +1,4 @@
-package api
+package rest
 
 // Response represents response body
 type Response struct {
