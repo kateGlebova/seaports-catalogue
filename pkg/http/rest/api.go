@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
+
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 
 	"github.com/gorilla/handlers"
@@ -14,20 +16,21 @@ import (
 
 const ShutdownTimeout = 5 * time.Second
 
-type ClientAPI struct {
+type API struct {
 	server *http.Server
 
 	port string
 	err  error
 }
 
-func NewClientAPI(handler http.Handler, port string) *ClientAPI {
+func NewClientAPI(manager managing.Service, port string) *API {
+	handler := NewHandler(manager)
 	server := &http.Server{Addr: ":" + port, Handler: handlers.LoggingHandler(os.Stdout, handler)}
-	return &ClientAPI{server: server, port: port}
+	return &API{server: server, port: port}
 }
 
-// Run starts ClientAPI HTTP server
-func (api *ClientAPI) Run() {
+// Run starts API HTTP server
+func (api *API) Run() {
 	log.Printf("Listening on %s...", api.port)
 	if err := api.server.ListenAndServe(); err != http.ErrServerClosed {
 		api.err = err
@@ -36,7 +39,7 @@ func (api *ClientAPI) Run() {
 }
 
 // Stop attempts to gracefully stop API server with timeout
-func (api *ClientAPI) Stop() (err error) {
+func (api *API) Stop() (err error) {
 	if api.err != nil {
 		return api.err
 	}
@@ -46,7 +49,7 @@ func (api *ClientAPI) Stop() (err error) {
 		if err = api.server.Shutdown(ctx); err != nil {
 			return err
 		}
-		log.Print("ClientAPI stopped")
+		log.Print("API stopped")
 	}
 	return
 }

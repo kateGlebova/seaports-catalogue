@@ -1,80 +1,50 @@
 package proto
 
 import (
-	"context"
+	"log"
+	"net"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-	"github.com/kateGlebova/seaports-catalogue/pkg/storage"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
+	"google.golang.org/grpc"
 )
 
-type RepositoryService struct {
-	portRepo entities.PortRepository
+type PortDomainService struct {
+	grpcService RepositoryServer
+	server      *grpc.Server
+
+	port string
+	err  error
 }
 
-func NewRepositoryService(portRepo entities.PortRepository) *RepositoryService {
-	return &RepositoryService{portRepo: portRepo}
+func NewPortDomainService(grpcService RepositoryServer, port string) *PortDomainService {
+	grpcServer := grpc.NewServer()
+	RegisterRepositoryServer(grpcServer, grpcService)
+	return &PortDomainService{grpcService: grpcService, port: port, server: grpcServer}
 }
 
-func (s RepositoryService) ListPorts(_ context.Context, r *ListRequest) (*Ports, error) {
-	limit, offset := uint(r.Limit), uint(r.Offset)
-	ports, err := s.portRepo.GetAllPorts(limit, offset)
+// Run starts PortDomainService gRPC server
+func (r *PortDomainService) Run() {
+	log.Printf("Listening on %s...", r.port)
+	lis, err := net.Listen("tcp", ":"+r.port)
 	if err != nil {
-		return &Ports{}, gRPCError(err)
+		r.err = err
+		lifecycle.KillTheApp()
 	}
 
-	ps := make([]*Port, 0, len(ports))
-	for _, port := range ports {
-		ps = append(ps, DomainToProtoPort(port))
+	if err = r.server.Serve(lis); err != grpc.ErrServerStopped {
+		r.err = err
+		lifecycle.KillTheApp()
 	}
-	return &Ports{Ports: ps}, nil
 }
 
-func (s RepositoryService) GetPort(_ context.Context, port *Port) (*Port, error) {
-	p, err := s.portRepo.GetPort(port.Id)
-	if err != nil {
-		return port, gRPCError(err)
+// Stop gracefully stops gRPC server
+func (r *PortDomainService) Stop() (err error) {
+	if r.err != nil {
+		return r.err
 	}
-	return DomainToProtoPort(p), err
-}
-
-func (s RepositoryService) CreatePort(_ context.Context, port *Port) (*Empty, error) {
-	p := ProtoToDomainPort(port)
-	err := s.portRepo.CreatePort(p)
-	if err != nil {
-		return &Empty{}, gRPCError(err)
+	if r.server != nil {
+		r.server.GracefulStop()
+		log.Print("PortDomainService stopped")
 	}
-	return &Empty{}, nil
-}
-
-func (s RepositoryService) UpdatePort(_ context.Context, port *Port) (*Empty, error) {
-	p := ProtoToDomainPort(port)
-	err := s.portRepo.UpdatePort(p)
-	if err != nil {
-		return &Empty{}, gRPCError(err)
-	}
-	return &Empty{}, nil
-}
-
-func (s RepositoryService) CreateOrUpdatePorts(_ context.Context, ports *Ports) (*Empty, error) {
-	ps := make([]entities.Port, 0, len(ports.Ports))
-	for _, port := range ports.Ports {
-		ps = append(ps, ProtoToDomainPort(port))
-	}
-
-	err := s.portRepo.CreateOrUpdatePorts(ps...)
-	if err != nil {
-		return &Empty{}, gRPCError(err)
-	}
-	return &Empty{}, nil
-}
-
-func gRPCError(err error) error {
-	errMessage := err.Error()
-	code, ok := storage.GRPCErrorMapping[errMessage]
-	if !ok {
-		return status.Error(codes.Internal, errMessage)
-	}
-	return status.Error(code, errMessage)
+	return
 }

@@ -4,8 +4,6 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/kateGlebova/seaports-catalogue/internal/repository"
-
 	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
 	"github.com/kateGlebova/seaports-catalogue/pkg/storage/inmem"
 
@@ -14,8 +12,8 @@ import (
 
 func main() {
 	storage := inmem.NewRepository()
-	grpcSvc := proto.NewRepositoryService(storage)
-	portDomainSvc := repository.NewPortDomainService(grpcSvc, "9090")
+	grpcSvc := proto.NewRepositoryGRPCService(storage)
+	portDomainSvc := proto.NewPortDomainService(grpcSvc, "9090")
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)
