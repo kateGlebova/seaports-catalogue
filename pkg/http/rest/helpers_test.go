@@ -11,3 +11,15 @@ func ExecuteRequest(r http.Handler, req *http.Request) *httptest.ResponseRecorde
 
 	return rr
 }
+
+type testError struct{}
+
+func (err testError) Error() string {
+	return "test error"
+}
+
+type errReader struct{}
+
+func (r errReader) Read([]byte) (int, error) {
+	return 0, testError{}
+}

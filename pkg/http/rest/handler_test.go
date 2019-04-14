@@ -8,12 +8,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
+
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetPortsEmpty(t *testing.T) {
-	manager := MockManager{empty: true}
+	manager := managing.MockService{Len: 0}
 	router := NewHandler(manager)
 
 	req, _ := http.NewRequest(http.MethodGet, "/ports", nil)
@@ -25,7 +27,8 @@ func TestGetPortsEmpty(t *testing.T) {
 }
 
 func TestGetPorts(t *testing.T) {
-	manager := MockManager{}
+	length := 500
+	manager := managing.MockService{Len: length}
 	router := NewHandler(manager)
 
 	testCases := []struct {
@@ -34,10 +37,10 @@ func TestGetPorts(t *testing.T) {
 		code  int
 		body  interface{}
 	}{
-		{name: "success", query: "?limit=10&offset=0", code: http.StatusOK, body: mockPorts()},
+		{name: "success", query: "?limit=10&offset=0", code: http.StatusOK, body: entities.MockPorts(length)},
 		{name: "invalid limit", query: "?limit=13f&offset=4", code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: `Bad Request: strconv.Atoi: parsing "13f": invalid syntax`}},
 		{name: "invalid offset", query: "?limit=13&offset=4df", code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: `Bad Request: strconv.Atoi: parsing "4df": invalid syntax`}},
-		{name: "no limit and offset", code: http.StatusOK, body: mockPorts()},
+		{name: "no limit and offset", code: http.StatusOK, body: entities.MockPorts(length)},
 	}
 
 	for _, tc := range testCases {
@@ -53,19 +56,19 @@ func TestGetPorts(t *testing.T) {
 }
 
 func TestGetPort(t *testing.T) {
-	manager := MockManager{}
+	manager := managing.MockService{}
 	router := NewHandler(manager)
 
 	req, _ := http.NewRequest(http.MethodGet, "/ports/AEAJM", nil)
 	response := ExecuteRequest(router, req)
 
 	assert.Equal(t, http.StatusOK, response.Code)
-	expected, _ := json.Marshal(mockPort)
+	expected, _ := json.Marshal(entities.MockPort)
 	assert.Equal(t, string(expected)+"\n", response.Body.String())
 }
 
 func TestCreatePort(t *testing.T) {
-	manager := MockManager{}
+	manager := managing.MockService{}
 	router := NewHandler(manager)
 
 	testCases := []struct {
@@ -76,7 +79,7 @@ func TestCreatePort(t *testing.T) {
 	}{
 		{name: "body reading error", reader: errReader{}, code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: test error"}},
 		{name: "unmarshalling error", reader: strings.NewReader(`{"id":"AEAJM"`), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: unexpected end of JSON input"}},
-		{name: "success", reader: convertToReader(mockPort), code: http.StatusCreated, body: mockPort},
+		{name: "success", reader: convertToReader(entities.MockPort), code: http.StatusCreated, body: entities.MockPort},
 	}
 
 	for _, tc := range testCases {
@@ -92,7 +95,7 @@ func TestCreatePort(t *testing.T) {
 }
 
 func TestUpdatePort(t *testing.T) {
-	manager := MockManager{}
+	manager := managing.MockService{}
 	router := NewHandler(manager)
 
 	testCases := []struct {
@@ -104,8 +107,8 @@ func TestUpdatePort(t *testing.T) {
 	}{
 		{name: "body reading error", id: "AEAJM", reader: errReader{}, code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: test error"}},
 		{name: "unmarshalling error", id: "AEAJM", reader: strings.NewReader(`{"id":"AEAJM"`), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: unexpected end of JSON input"}},
-		{name: "port ID mismatch", id: "AEAJMD", reader: convertToReader(mockPort), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: port ID in URL path does not match port ID in body"}},
-		{name: "success", id: "AEAJM", reader: convertToReader(mockPort), code: http.StatusOK, body: mockPort},
+		{name: "port ID mismatch", id: "AEAJMD", reader: convertToReader(entities.MockPort), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: port ID in URL path does not match port ID in body"}},
+		{name: "success", id: "AEAJM", reader: convertToReader(entities.MockPort), code: http.StatusOK, body: entities.MockPort},
 	}
 
 	for _, tc := range testCases {
@@ -121,7 +124,7 @@ func TestUpdatePort(t *testing.T) {
 }
 
 func TestServiceError(t *testing.T) {
-	manager := MockManager{err: testError{}}
+	manager := managing.MockService{Err: testError{}}
 	router := NewHandler(manager)
 	testCases := []struct {
 		name   string
@@ -130,9 +133,9 @@ func TestServiceError(t *testing.T) {
 		body   interface{}
 	}{
 		{name: "list ports", url: "/ports", method: http.MethodGet},
-		{name: "create port", url: "/ports", method: http.MethodPost, body: mockPort},
+		{name: "create port", url: "/ports", method: http.MethodPost, body: entities.MockPort},
 		{name: "get port", url: "/ports/AEAJM", method: http.MethodGet},
-		{name: "update port", url: "/ports/AEAJM", method: http.MethodPut, body: mockPort},
+		{name: "update port", url: "/ports/AEAJM", method: http.MethodPut, body: entities.MockPort},
 	}
 
 	for _, tc := range testCases {
