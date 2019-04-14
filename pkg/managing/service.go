@@ -40,6 +40,7 @@ func (s service) GetPort(id string) (entities.Port, error) {
 func (s service) ListPorts(limit, offset uint) ([]entities.Port, error) {
 	ports, err := s.client.ListPorts(context.Background(), &proto.ListRequest{Limit: uint64(limit), Offset: uint64(offset)})
 	if err != nil {
+		// return just grpc code ? or just text ?
 		return []entities.Port{}, err
 	}
 	ps := make([]entities.Port, 0, len(ports.Ports))

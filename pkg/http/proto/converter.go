@@ -2,15 +2,6 @@ package proto
 
 import (
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-	"github.com/kateGlebova/seaports-catalogue/pkg/storage"
-	"google.golang.org/grpc/codes"
-)
-
-var (
-	errorMapping = map[string]codes.Code{
-		storage.ErrPortNotFound{}.Error():      codes.NotFound,
-		storage.ErrPortAlreadyExists{}.Error(): codes.AlreadyExists,
-	}
 )
 
 func DomainToProtoPort(port entities.Port) *Port {

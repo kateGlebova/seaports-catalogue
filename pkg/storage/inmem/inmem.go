@@ -26,14 +26,14 @@ func (r Repository) GetPort(id string) (entities.Port, error) {
 	return port, nil
 }
 
-func (r Repository) GetAllPorts(limit, offset uint) []entities.Port {
+func (r Repository) GetAllPorts(limit, offset uint) ([]entities.Port, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	ports := make([]entities.Port, 0, len(r.ports))
 	for _, port := range r.ports {
 		ports = append(ports, port)
 	}
-	return ports
+	return ports, nil
 }
 
 func (r Repository) CreatePort(port entities.Port) error {

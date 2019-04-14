@@ -16,7 +16,7 @@ type Port struct {
 
 type PortRepository interface {
 	GetPort(id string) (Port, error)
-	GetAllPorts(limit, offset uint) []Port
+	GetAllPorts(limit, offset uint) ([]Port, error)
 	CreatePort(Port) error
 	UpdatePort(Port) error
 	CreateOrUpdatePorts(...Port) error

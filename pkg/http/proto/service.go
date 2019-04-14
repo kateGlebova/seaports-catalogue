@@ -3,15 +3,10 @@ package proto
 import (
 	"context"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/kateGlebova/seaports-catalogue/pkg/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-)
-
-const (
-	DefaultLimit  = 50
-	DefaultOffset = 0
 )
 
 type RepositoryService struct {
@@ -24,19 +19,16 @@ func NewRepositoryService(portRepo entities.PortRepository) *RepositoryService {
 
 func (s RepositoryService) ListPorts(_ context.Context, r *ListRequest) (*Ports, error) {
 	limit, offset := uint(r.Limit), uint(r.Offset)
-	if limit == 0 {
-		limit = DefaultLimit
-	}
-	if offset == 0 {
-		offset = DefaultOffset
+	ports, err := s.portRepo.GetAllPorts(limit, offset)
+	if err != nil {
+		return &Ports{}, gRPCError(err)
 	}
 
-	ports := make([]*Port, 0, limit)
-
-	for _, port := range s.portRepo.GetAllPorts(limit, offset) {
-		ports = append(ports, DomainToProtoPort(port))
+	ps := make([]*Port, 0, len(ports))
+	for _, port := range ports {
+		ps = append(ps, DomainToProtoPort(port))
 	}
-	return &Ports{Ports: ports}, nil
+	return &Ports{Ports: ps}, nil
 }
 
 func (s RepositoryService) GetPort(_ context.Context, port *Port) (*Port, error) {
@@ -80,7 +72,7 @@ func (s RepositoryService) CreateOrUpdatePorts(_ context.Context, ports *Ports) 
 
 func gRPCError(err error) error {
 	errMessage := err.Error()
-	code, ok := errorMapping[errMessage]
+	code, ok := storage.GRPCErrorMapping[errMessage]
 	if !ok {
 		return status.Error(codes.Internal, errMessage)
 	}

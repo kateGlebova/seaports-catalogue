@@ -10,22 +10,20 @@ import (
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 
 	"github.com/gorilla/handlers"
-	"github.com/kateGlebova/seaports-catalogue/pkg/parsing"
 )
 
 const ShutdownTimeout = 5 * time.Second
 
 type ClientAPI struct {
-	server  *http.Server
-	parsing parsing.Service
+	server *http.Server
 
 	port string
 	err  error
 }
 
-func NewClientAPI(p parsing.Service, handler http.Handler, port string) *ClientAPI {
+func NewClientAPI(handler http.Handler, port string) *ClientAPI {
 	server := &http.Server{Addr: ":" + port, Handler: handlers.LoggingHandler(os.Stdout, handler)}
-	return &ClientAPI{parsing: p, server: server, port: port}
+	return &ClientAPI{server: server, port: port}
 }
 
 // Run starts ClientAPI HTTP server

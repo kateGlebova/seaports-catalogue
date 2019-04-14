@@ -13,10 +13,9 @@ import (
 )
 
 func main() {
-	parser := rest.MockParser{}
 	managingSvc := managing.NewService(":9090")
 	handler := rest.NewHandler(managingSvc)
-	a := api.NewClientAPI(parser, handler, "8080")
+	a := api.NewClientAPI(handler, "8080")
 
 	runner := lifecycle.NewRunner(a, managingSvc.(lifecycle.Runnable))
 
