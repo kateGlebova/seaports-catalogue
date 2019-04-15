@@ -21,10 +21,10 @@ func (s *service) Run() {
 }
 
 func (s *service) Stop() error {
-	log.Print("Closing gRPC client connection...")
 	if s.err != nil {
 		return s.err
 	}
+	log.Print("Closing gRPC client connection...")
 	if s.connection != nil {
 		return s.connection.Close()
 	}

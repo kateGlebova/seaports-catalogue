@@ -4,6 +4,8 @@ import (
 	"log"
 	"net"
 
+	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 	"google.golang.org/grpc"
 )
@@ -16,8 +18,9 @@ type PortDomainService struct {
 	err  error
 }
 
-func NewPortDomainService(grpcService RepositoryServer, port string) *PortDomainService {
+func NewPortDomainService(port string, storage entities.PortRepository) *PortDomainService {
 	grpcServer := grpc.NewServer()
+	grpcService := NewRepositoryGRPCService(storage)
 	RegisterRepositoryServer(grpcServer, grpcService)
 	return &PortDomainService{grpcService: grpcService, port: port, server: grpcServer}
 }

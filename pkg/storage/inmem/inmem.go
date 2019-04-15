@@ -16,7 +16,7 @@ func NewRepository() *Repository {
 	return &Repository{ports: make(map[string]entities.Port)}
 }
 
-func (r Repository) GetPort(id string) (entities.Port, error) {
+func (r *Repository) GetPort(id string) (entities.Port, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	port, ok := r.ports[id]
@@ -26,7 +26,7 @@ func (r Repository) GetPort(id string) (entities.Port, error) {
 	return port, nil
 }
 
-func (r Repository) GetAllPorts(limit, offset uint) ([]entities.Port, error) {
+func (r *Repository) GetAllPorts(limit, offset uint) ([]entities.Port, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	ports := make([]entities.Port, 0, len(r.ports))
@@ -36,7 +36,7 @@ func (r Repository) GetAllPorts(limit, offset uint) ([]entities.Port, error) {
 	return ports, nil
 }
 
-func (r Repository) CreatePort(port entities.Port) error {
+func (r *Repository) CreatePort(port entities.Port) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -48,7 +48,7 @@ func (r Repository) CreatePort(port entities.Port) error {
 	return nil
 }
 
-func (r Repository) UpdatePort(port entities.Port) error {
+func (r *Repository) UpdatePort(port entities.Port) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -60,7 +60,7 @@ func (r Repository) UpdatePort(port entities.Port) error {
 	return nil
 }
 
-func (r Repository) CreateOrUpdatePorts(ports ...entities.Port) error {
+func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
