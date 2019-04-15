@@ -1,3 +1,5 @@
 vendor/
 .idea/
 ports.json
+.DS_Store
+asd.go
