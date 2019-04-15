@@ -29,9 +29,11 @@ func (s *jsonService) Run() {
 
 	defer func() { s.file.Close(); s.file = nil }()
 
-	if err := s.Populate(); err != nil {
+	log.Printf("Populating from %s...", s.fileName)
+	for err := s.Populate(); err != nil; err = s.Populate() {
 		log.Printf("error populating the database: %v", err)
 	}
+	log.Print("Populating finished")
 }
 
 // Stop closes JSON file if it's open
