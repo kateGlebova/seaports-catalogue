@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
 	"github.com/kateGlebova/seaports-catalogue/pkg/storage"
 )
@@ -48,14 +49,42 @@ func (r *Repository) GetAllPorts(limit, offset uint) (ports []entities.Port, err
 	return
 }
 
-func (r *Repository) CreatePort(port entities.Port) error {
-	return nil
+func (r *Repository) CreatePort(port entities.Port) (err error) {
+	sessionCopy := r.session.Copy()
+	defer sessionCopy.Close()
+	collection := sessionCopy.DB(r.db).C(r.collection)
+
+	err = collection.FindId(port.ID).One(&port)
+	if err != mgo.ErrNotFound {
+		err = storage.ErrPortAlreadyExists{}
+		return
+	}
+
+	return collection.Insert(port)
 }
 
-func (r *Repository) UpdatePort(port entities.Port) error {
-	return nil
+func (r *Repository) UpdatePort(port entities.Port) (err error) {
+	sessionCopy := r.session.Copy()
+	defer sessionCopy.Close()
+	collection := sessionCopy.DB(r.db).C(r.collection)
+
+	err = collection.UpdateId(port.ID, port)
+	if err == mgo.ErrNotFound {
+		err = storage.ErrPortNotFound{}
+	}
+	return
 }
 
-func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) error {
-	return nil
+func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) (err error) {
+	sessionCopy := r.session.Copy()
+	defer sessionCopy.Close()
+	bulk := sessionCopy.DB(r.db).C(r.collection).Bulk()
+
+	pairs := make([]interface{}, 0, len(ports)*2)
+	for _, p := range ports {
+		pairs = append(pairs, bson.M{"_id": p.ID}, p)
+	}
+	bulk.Upsert(pairs...)
+	_, err = bulk.Run()
+	return
 }

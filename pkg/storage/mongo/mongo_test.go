@@ -164,11 +164,11 @@ func TestRepository_CreatePort(t *testing.T) {
 				assert.EqualError(t, err, tc.err.Error())
 			} else {
 				assert.NoError(t, err)
+				var result entities.Port
+				err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
+				assert.NoError(t, err)
+				assert.Equal(t, port, result)
 			}
-			var result entities.Port
-			err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
-			assert.NoError(t, err)
-			assert.Equal(t, port, result)
 		})
 	}
 }
@@ -188,6 +188,8 @@ func TestRepository_UpdatePort(t *testing.T) {
 		Name:        "Name",
 		City:        "City",
 		Country:     "Country",
+		Alias:       make([]string, 0),
+		Regions:     make([]string, 0),
 		Coordinates: []float64{25.4052165, 55.5136433},
 		Province:    "Province",
 		Timezone:    "Europe/Kyiv",
@@ -213,11 +215,11 @@ func TestRepository_UpdatePort(t *testing.T) {
 				assert.EqualError(t, err, tc.err.Error())
 			} else {
 				assert.NoError(t, err)
+				var result entities.Port
+				err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
+				assert.NoError(t, err)
+				assert.Equal(t, instance, result)
 			}
-			var result entities.Port
-			err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
-			assert.NoError(t, err)
-			assert.Equal(t, port, result)
 		})
 	}
 }
@@ -237,6 +239,8 @@ func TestRepository_CreateOrUpdatePorts(t *testing.T) {
 		Name:        "Name",
 		City:        "City",
 		Country:     "Country",
+		Alias:       make([]string, 0),
+		Regions:     make([]string, 0),
 		Coordinates: []float64{25.4052165, 55.5136433},
 		Province:    "Province",
 		Timezone:    "Europe/Kyiv",
