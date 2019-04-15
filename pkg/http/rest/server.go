@@ -31,7 +31,7 @@ func NewClientAPI(manager managing.Service, port string) *API {
 
 // Run starts API HTTP server
 func (api *API) Run() {
-	log.Printf("Listening on %s...", api.port)
+	log.Printf("API: Listening on %s...", api.port)
 	if err := api.server.ListenAndServe(); err != http.ErrServerClosed {
 		api.err = err
 		lifecycle.KillTheApp()
@@ -49,7 +49,7 @@ func (api *API) Stop() (err error) {
 		if err = api.server.Shutdown(ctx); err != nil {
 			return err
 		}
-		log.Print("API stopped")
 	}
+	log.Print("API stopped.")
 	return
 }

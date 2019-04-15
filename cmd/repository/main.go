@@ -12,16 +12,19 @@ import (
 )
 
 func main() {
-	storage := mongo.NewRepository("localhost:27017", "ports", "ports")
+	storage, err := mongo.NewRepository("localhost:27017", "ports", "ports")
+	if err != nil {
+		panic(err)
+	}
 	portDomainSvc := proto.NewPortDomainService("9090", storage)
 
-	runner := lifecycle.NewRunner(portDomainSvc, storage)
+	stopper := lifecycle.NewStopper(portDomainSvc, storage)
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)
 	signal.Notify(signalChan, lifecycle.GracefulShutdownSignals...)
-	go lifecycle.SignalHandle(signalChan, exitChan, runner.Stop)
-	go runner.Run()
+	go lifecycle.SignalHandle(signalChan, exitChan, stopper.Stop)
+	go portDomainSvc.Run()
 	code := <-exitChan
 	os.Exit(code)
 }

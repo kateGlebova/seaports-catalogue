@@ -2,12 +2,16 @@ package managing
 
 import (
 	"context"
+	"log"
+	"time"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
 	"google.golang.org/grpc"
 )
+
+const ConnectionTimeout = 5 * time.Second
 
 type Service interface {
 	GetPort(id string) (entities.Port, error)
@@ -17,16 +21,40 @@ type Service interface {
 	CreateOrUpdatePorts(...entities.Port) error
 }
 
-func NewService(repoAddress string) Service {
-	return &service{repoAddr: repoAddress}
-}
-
 type service struct {
 	connection *grpc.ClientConn
 	client     proto.RepositoryClient
 
 	repoAddr string
 	err      error
+}
+
+func NewService(repoAddress string) (Service, error) {
+	log.Print("Managing service: dialing gRPC server...")
+	ctx, cancel := context.WithTimeout(context.Background(), ConnectionTimeout)
+	conn, err := grpc.DialContext(ctx, repoAddress, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return nil, err
+	}
+	cancel()
+
+	client := proto.NewRepositoryClient(conn)
+	log.Print("Managing service: gRPC connection established.")
+	return &service{repoAddr: repoAddress, connection: conn, client: client}, nil
+}
+
+func (s *service) Stop() error {
+	if s.err != nil {
+		return s.err
+	}
+	if s.connection != nil {
+		log.Print("Managing service: Closing gRPC client connection...")
+		if err := s.connection.Close(); err != nil {
+			return err
+		}
+	}
+	log.Print("Managing service stopped.")
+	return nil
 }
 
 func (s service) GetPort(id string) (entities.Port, error) {

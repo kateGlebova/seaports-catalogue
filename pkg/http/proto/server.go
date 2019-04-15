@@ -42,6 +42,7 @@ func (r *PortDomainService) Run() {
 
 // Stop gracefully stops gRPC server
 func (r *PortDomainService) Stop() (err error) {
+	log.Print("PortDomainService is gracefully stopping...")
 	if r.err != nil {
 		return r.err
 	}

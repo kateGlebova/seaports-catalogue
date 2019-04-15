@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 
@@ -14,17 +15,23 @@ import (
 )
 
 func main() {
-	managingSvc := managing.NewService(":9090")
-	populatingSvc := populating.NewService("ports.json", managingSvc)
-	a := rest.NewClientAPI(managingSvc, "8080")
+	managingSvc, err := managing.NewService(":9090")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	runner := lifecycle.NewRunner(a, managingSvc.(lifecycle.Runnable), populatingSvc.(lifecycle.Runnable))
+	populatingSvc := populating.NewService("ports.json", managingSvc)
+	api := rest.NewClientAPI(managingSvc, "8080")
+
+	stopper := lifecycle.NewStopper(api, managingSvc.(lifecycle.Stoppable), populatingSvc.(lifecycle.Stoppable))
+	runner := lifecycle.NewRunner(api, populatingSvc.(lifecycle.Runnable))
 
 	signalChan := make(chan os.Signal, 1)
 	exitChan := make(chan int)
 	signal.Notify(signalChan, lifecycle.GracefulShutdownSignals...)
-	go lifecycle.SignalHandle(signalChan, exitChan, runner.Stop)
+	go lifecycle.SignalHandle(signalChan, exitChan, stopper.Stop)
 	go runner.Run()
+
 	code := <-exitChan
 	os.Exit(code)
 }
