@@ -1,0 +1,34 @@
+version: "3"
+services:
+  mongo:
+    image: mongo:4
+    networks:
+      - backend
+
+  api:
+    image: "client-api"
+    ports:
+      - "8080:8080"
+    environment:
+      REPOSITORY: repository:8080
+    restart: on-failure
+    depends_on:
+      - repository
+    networks:
+      - backend
+    volumes:
+      - ${PWD}/../data/:/opt/api/data/
+
+  repository:
+    image: "port-domain-svc"
+    environment:
+      MONGO_URL: mongo:27017
+    restart: on-failure
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
