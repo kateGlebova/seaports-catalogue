@@ -70,6 +70,15 @@ func (s RepositoryGRPCService) CreateOrUpdatePorts(_ context.Context, ports *Por
 	return &Empty{}, nil
 }
 
+func (s RepositoryGRPCService) Delete(_ context.Context, port *Port) (*Empty, error) {
+	p := ProtoToDomainPort(port)
+	err := s.portRepo.DeletePort(p)
+	if err != nil {
+		return &Empty{}, gRPCError(err)
+	}
+	return &Empty{}, nil
+}
+
 func gRPCError(err error) error {
 	errMessage := err.Error()
 	code, ok := storage.GRPCErrorMapping[errMessage]

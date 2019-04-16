@@ -19,6 +19,7 @@ type Service interface {
 	CreatePort(entities.Port) error
 	UpdatePort(id string) error
 	CreateOrUpdatePorts(...entities.Port) error
+	DeletePort(id string) error
 }
 
 type service struct {
@@ -94,5 +95,10 @@ func (s *service) CreateOrUpdatePorts(ports ...entities.Port) error {
 		ps = append(ps, proto.DomainToProtoPort(port))
 	}
 	_, err := s.client.CreateOrUpdatePorts(context.Background(), &proto.Ports{Ports: ps})
+	return err
+}
+
+func (s *service) DeletePort(id string) error {
+	_, err := s.client.Delete(context.Background(), &proto.Port{Id: id})
 	return err
 }

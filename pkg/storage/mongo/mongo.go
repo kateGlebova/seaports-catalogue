@@ -117,6 +117,21 @@ func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) (err error) {
 	return
 }
 
+// DeletePort deletes port if it exists in MongoDB
+func (r *Repository) DeletePort(port entities.Port) (err error) {
+	sessionCopy := r.session.Copy()
+	defer sessionCopy.Close()
+	collection := r.session.DB(r.db).C(r.collection)
+
+	err = collection.RemoveId(port.ID)
+	if err == mgo.ErrNotFound {
+		err = storage.ErrPortNotFound{}
+		return
+	}
+
+	return err
+}
+
 func createUpdateDocument(port entities.Port) bson.M {
 	m := make(bson.M)
 	if port.Name != "" {

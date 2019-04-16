@@ -123,6 +123,16 @@ func TestUpdatePort(t *testing.T) {
 	}
 }
 
+func TestDeletePort(t *testing.T) {
+	manager := managing.MockService{}
+	router := NewHandler(manager)
+
+	req, _ := http.NewRequest(http.MethodDelete, "/ports/AEAJM", nil)
+	response := ExecuteRequest(router, req)
+
+	assert.Equal(t, http.StatusNoContent, response.Code)
+}
+
 func TestServiceError(t *testing.T) {
 	manager := managing.MockService{Err: testError{}}
 	router := NewHandler(manager)
@@ -136,6 +146,7 @@ func TestServiceError(t *testing.T) {
 		{name: "create port", url: "/ports", method: http.MethodPost, body: entities.MockPort},
 		{name: "get port", url: "/ports/AEAJM", method: http.MethodGet},
 		{name: "update port", url: "/ports/AEAJM", method: http.MethodPut, body: entities.MockPort},
+		{name: "delete port", url: "/ports/AEAJM", method: http.MethodDelete},
 	}
 
 	for _, tc := range testCases {

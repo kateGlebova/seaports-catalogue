@@ -29,3 +29,7 @@ func (m MockService) UpdatePort(id string) error {
 func (m MockService) CreateOrUpdatePorts(...entities.Port) error {
 	return m.Err
 }
+
+func (m MockService) DeletePort(id string) error {
+	return m.Err
+}

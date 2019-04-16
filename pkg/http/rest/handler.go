@@ -19,6 +19,7 @@ func NewHandler(manager managing.Service) http.Handler {
 	r.HandleFunc("/ports", createPort(manager)).Methods(http.MethodPost)
 	r.HandleFunc("/ports/{port}", getPort(manager)).Methods(http.MethodGet)
 	r.HandleFunc("/ports/{port}", updatePort(manager)).Methods(http.MethodPut, http.MethodPatch)
+	r.HandleFunc("/ports/{port}", deletePort(manager)).Methods(http.MethodDelete)
 	return r
 }
 
@@ -109,6 +110,21 @@ func updatePort(manager managing.Service) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 		SuccessWithEntity(w, port)
+	}
+}
+
+func deletePort(manager managing.Service) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		portID := params["port"]
+
+		err := manager.DeletePort(portID)
+		if err != nil {
+			Error(w, err)
+			return
+		}
+
+		NoContent(w)
 	}
 }
 

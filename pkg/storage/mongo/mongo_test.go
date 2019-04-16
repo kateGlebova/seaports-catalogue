@@ -278,6 +278,43 @@ func TestRepository_CreateOrUpdatePorts(t *testing.T) {
 	}
 }
 
+func TestRepository_DeletePort(t *testing.T) {
+	err := clearDB()
+	if err != nil {
+		t.Fatalf("error clearing DB: %v", err)
+	}
+
+	err = addPort(entities.MockPort)
+	if err != nil {
+		t.Fatalf("error adding port to DB: %v", err)
+	}
+
+	testCases := []struct {
+		name string
+		id   string
+		err  error
+	}{
+		{name: "port exists", id: entities.MockPort.ID},
+		{name: "port doesn't exist", id: "id", err: storage.ErrPortNotFound{}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			port := entities.MockPort
+			port.ID = tc.id
+			err := repo.DeletePort(port)
+			if tc.err != nil {
+				assert.EqualError(t, err, tc.err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			var result entities.Port
+			err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
+			assert.EqualError(t, err, mgo.ErrNotFound.Error())
+		})
+	}
+}
+
 func clearDB() error {
 	return repo.session.DB(repo.db).DropDatabase()
 }

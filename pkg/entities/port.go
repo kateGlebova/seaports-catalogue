@@ -20,4 +20,5 @@ type PortRepository interface {
 	CreatePort(Port) error
 	UpdatePort(Port) error
 	CreateOrUpdatePorts(...Port) error
+	DeletePort(Port) error
 }

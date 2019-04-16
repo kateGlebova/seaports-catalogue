@@ -8,6 +8,7 @@ service Repository{
     rpc CreatePort(Port) returns (Empty) {}
     rpc UpdatePort(Port) returns (Empty) {}
     rpc CreateOrUpdatePorts(Ports) returns (Empty) {}
+    rpc Delete(Port) returns (Empty) {}
 }
 
 message Port {

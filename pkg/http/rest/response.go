@@ -55,6 +55,11 @@ func Created(w http.ResponseWriter, entity interface{}) {
 	json.NewEncoder(w).Encode(entity)
 }
 
+// Created returns response with 204 code
+func NoContent(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // SuccessWithEntity returns response with 200 code and JSON entity
 func SuccessWithEntity(w http.ResponseWriter, entity interface{}) {
 	w.WriteHeader(http.StatusOK)
