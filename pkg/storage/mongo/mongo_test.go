@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -72,6 +73,7 @@ func TestRepository_GetAllPorts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error adding ports to DB: %v", err)
 	}
+	sort.SliceStable(ports, func(i, j int) bool { return ports[i].ID < ports[j].ID })
 
 	testCases := []struct {
 		name   string

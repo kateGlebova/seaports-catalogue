@@ -15,7 +15,7 @@ import (
 )
 
 func TestGetPortsEmpty(t *testing.T) {
-	manager := managing.MockService{Len: 0}
+	manager := managing.MockService{Ports: []entities.Port{}}
 	router := NewHandler(manager)
 
 	req, _ := http.NewRequest(http.MethodGet, "/ports", nil)
@@ -27,8 +27,8 @@ func TestGetPortsEmpty(t *testing.T) {
 }
 
 func TestGetPorts(t *testing.T) {
-	length := 500
-	manager := managing.MockService{Len: length}
+	ports := entities.MockPorts(100)
+	manager := managing.MockService{Ports: ports}
 	router := NewHandler(manager)
 
 	testCases := []struct {
@@ -37,10 +37,10 @@ func TestGetPorts(t *testing.T) {
 		code  int
 		body  interface{}
 	}{
-		{name: "success", query: "?limit=10&offset=0", code: http.StatusOK, body: entities.MockPorts(length)},
+		{name: "success", query: "?limit=10&offset=0", code: http.StatusOK, body: ports},
 		{name: "invalid limit", query: "?limit=13f&offset=4", code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: `Bad Request: strconv.Atoi: parsing "13f": invalid syntax`}},
 		{name: "invalid offset", query: "?limit=13&offset=4df", code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: `Bad Request: strconv.Atoi: parsing "4df": invalid syntax`}},
-		{name: "no limit and offset", code: http.StatusOK, body: entities.MockPorts(length)},
+		{name: "no limit and offset", code: http.StatusOK, body: ports},
 	}
 
 	for _, tc := range testCases {
