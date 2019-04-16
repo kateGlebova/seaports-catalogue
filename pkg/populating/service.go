@@ -61,6 +61,7 @@ func (s *jsonService) Stop() error {
 		if err != nil {
 			return err
 		}
+		s.file = nil
 		log.Print("Populating service stopped")
 	}
 	return nil

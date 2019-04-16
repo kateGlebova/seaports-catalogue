@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -14,14 +15,22 @@ import (
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )
 
+var (
+	repoAddress = getFromEnv("REPOSITORY", "repository:8080")
+	dataFile    = getFromEnv("FILE", "ports.json")
+	port        = getFromEnv("PORT", "8080")
+)
+
 func main() {
-	managingSvc, err := managing.NewService(":9090")
+	flag.Parse()
+
+	managingSvc, err := managing.NewService(repoAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	populatingSvc := populating.NewService("ports.json", managingSvc)
-	api := rest.NewClientAPI(managingSvc, "8080")
+	populatingSvc := populating.NewService(dataFile, managingSvc)
+	api := rest.NewClientAPI(managingSvc, port)
 
 	stopper := lifecycle.NewStopper(api, managingSvc.(lifecycle.Stoppable), populatingSvc.(lifecycle.Stoppable))
 	runner := lifecycle.NewRunner(api, populatingSvc.(lifecycle.Runnable))
@@ -34,4 +43,12 @@ func main() {
 
 	code := <-exitChan
 	os.Exit(code)
+}
+
+func getFromEnv(key, defaultValue string) (value string) {
+	value = os.Getenv(key)
+	if value == "" {
+		value = defaultValue
+	}
+	return
 }

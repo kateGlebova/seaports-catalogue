@@ -11,12 +11,19 @@ import (
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )
 
+var (
+	url        = getFromEnv("MONGO_URL", "mongo:27017")
+	db         = getFromEnv("MONGO_DB", "ports")
+	collection = getFromEnv("MONGO_COLLECTION", "ports")
+	port       = getFromEnv("PORT", "8080")
+)
+
 func main() {
-	storage, err := mongo.NewRepository("localhost:27017", "ports", "ports")
+	storage, err := mongo.NewRepository(url, db, collection)
 	if err != nil {
 		panic(err)
 	}
-	portDomainSvc := proto.NewPortDomainService("9090", storage)
+	portDomainSvc := proto.NewPortDomainService(port, storage)
 
 	stopper := lifecycle.NewStopper(portDomainSvc, storage)
 
@@ -27,4 +34,12 @@ func main() {
 	go portDomainSvc.Run()
 	code := <-exitChan
 	os.Exit(code)
+}
+
+func getFromEnv(key, defaultValue string) (value string) {
+	value = os.Getenv(key)
+	if value == "" {
+		value = defaultValue
+	}
+	return
 }
