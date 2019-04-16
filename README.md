@@ -137,3 +137,8 @@ MONGO_URL | mongo:27017 | MongoDB address
 MONGO_DB | ports | MongoDB database to use
 MONGO_COLLECTION | ports | MongoDB collection
 PORT | 8080 | port service should listen
+
+## Possible improvements
+
+1. Tests for gRPC client and server
+2. Add logging for PortDomainService

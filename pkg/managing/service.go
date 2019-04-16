@@ -33,11 +33,11 @@ type service struct {
 func NewService(repoAddress string) (Service, error) {
 	log.Print("Managing service: dialing gRPC server...")
 	ctx, cancel := context.WithTimeout(context.Background(), ConnectionTimeout)
+	cancel()
 	conn, err := grpc.DialContext(ctx, repoAddress, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil, err
 	}
-	cancel()
 
 	client := proto.NewRepositoryClient(conn)
 	log.Print("Managing service: gRPC connection established.")
