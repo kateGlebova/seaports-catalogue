@@ -98,7 +98,7 @@ func updatePort(manager managing.Service) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		if portID != port.ID {
+		if port.ID != "" && portID != port.ID {
 			BadRequest(w, errors.New("port ID in URL path does not match port ID in body"))
 			return
 		}

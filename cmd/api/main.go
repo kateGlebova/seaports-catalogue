@@ -17,7 +17,7 @@ import (
 
 var (
 	repoAddress = getFromEnv("REPOSITORY", "repository:8080")
-	dataFile    = getFromEnv("FILE", "/opt/api/data/ports.json")
+	dataFile    = getFromEnv("DATA_FILE", "/opt/api/data/ports.json")
 	port        = getFromEnv("PORT", "8080")
 )
 

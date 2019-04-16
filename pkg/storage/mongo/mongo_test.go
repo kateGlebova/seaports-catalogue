@@ -188,16 +188,17 @@ func TestRepository_UpdatePort(t *testing.T) {
 
 	port := entities.Port{
 		Name:        "Name",
-		City:        "City",
 		Country:     "Country",
 		Alias:       make([]string, 0),
 		Regions:     make([]string, 0),
 		Coordinates: []float64{25.4052165, 55.5136433},
 		Province:    "Province",
 		Timezone:    "Europe/Kyiv",
-		Unlocs:      []string{"AEAJL"},
 		Code:        "52005",
 	}
+	expectedPort := port
+	expectedPort.City = entities.MockPort.City
+	expectedPort.Unlocs = entities.MockPort.Unlocs
 
 	testCases := []struct {
 		name string
@@ -210,17 +211,18 @@ func TestRepository_UpdatePort(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			instance := port
-			instance.ID = tc.id
-			err := repo.UpdatePort(instance)
+			port.ID = tc.id
+			err := repo.UpdatePort(port)
 			if tc.err != nil {
 				assert.EqualError(t, err, tc.err.Error())
 			} else {
 				assert.NoError(t, err)
+				expectedPort.ID = tc.id
+
 				var result entities.Port
 				err = repo.session.DB(repo.db).C(repo.collection).FindId(tc.id).One(&result)
 				assert.NoError(t, err)
-				assert.Equal(t, instance, result)
+				assert.Equal(t, expectedPort, result)
 			}
 		})
 	}

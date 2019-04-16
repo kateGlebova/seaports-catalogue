@@ -4,7 +4,7 @@ vendor:
 deps: vendor
 	GO111MODULE=on go mod vendor
 
-test: deps run-tests rm-test-svc clean
+test: deps run-tests rm-test-svc
 
 run-tests: run-test-svc
 	./scripts/run-tests.sh

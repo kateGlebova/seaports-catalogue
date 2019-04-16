@@ -95,14 +95,14 @@ func (r *Repository) UpdatePort(port entities.Port) (err error) {
 	defer sessionCopy.Close()
 	collection := r.session.DB(r.db).C(r.collection)
 
-	err = collection.UpdateId(port.ID, port)
+	err = collection.UpdateId(port.ID, bson.M{"$set": createUpdateDocument(port)})
 	if err == mgo.ErrNotFound {
 		err = storage.ErrPortNotFound{}
 	}
 	return
 }
 
-// CreateOrUpdatePorts creates ports that don't exist and updates ports that do
+// CreateOrUpdatePorts creates ports that don't exist and overwrites ports that do
 func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) (err error) {
 	sessionCopy := r.session.Copy()
 	defer sessionCopy.Close()
@@ -115,4 +115,39 @@ func (r *Repository) CreateOrUpdatePorts(ports ...entities.Port) (err error) {
 	bulk.Upsert(pairs...)
 	_, err = bulk.Run()
 	return
+}
+
+func createUpdateDocument(port entities.Port) bson.M {
+	m := make(bson.M)
+	if port.Name != "" {
+		m["name"] = port.Name
+	}
+	if port.City != "" {
+		m["city"] = port.City
+	}
+	if port.Country != "" {
+		m["country"] = port.Country
+	}
+	if len(port.Alias) > 0 {
+		m["alias"] = port.Alias
+	}
+	if len(port.Regions) > 0 {
+		m["regions"] = port.Regions
+	}
+	if len(port.Coordinates) > 0 {
+		m["coordinates"] = port.Coordinates
+	}
+	if port.Province != "" {
+		m["province"] = port.Province
+	}
+	if port.Timezone != "" {
+		m["timezone"] = port.Timezone
+	}
+	if len(port.Unlocs) > 0 {
+		m["unlocs"] = port.Unlocs
+	}
+	if port.Code != "" {
+		m["code"] = port.Code
+	}
+	return m
 }
