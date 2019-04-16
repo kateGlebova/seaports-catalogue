@@ -33,8 +33,8 @@ type service struct {
 func NewService(repoAddress string) (Service, error) {
 	log.Print("Managing service: dialing gRPC server...")
 	ctx, cancel := context.WithTimeout(context.Background(), ConnectionTimeout)
-	cancel()
 	conn, err := grpc.DialContext(ctx, repoAddress, grpc.WithInsecure(), grpc.WithBlock())
+	cancel()
 	if err != nil {
 		return nil, err
 	}

@@ -140,5 +140,6 @@ PORT | 8080 | port service should listen
 
 ## Possible improvements
 
-1. Tests for gRPC client and server
+1. Add tests for gRPC client and server
 2. Add logging for PortDomainService
+3. Convert gRPC error to REST error
