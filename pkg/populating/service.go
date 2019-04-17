@@ -132,7 +132,7 @@ func (p jsonPort) getStringSliceField(field string) []string {
 	if p[field] == nil {
 		return nil
 	}
-	values := make([]string, len(p[field].([]interface{})))
+	values := make([]string, 0, len(p[field].([]interface{})))
 	for _, v := range p[field].([]interface{}) {
 		values = append(values, v.(string))
 	}
@@ -143,7 +143,7 @@ func (p jsonPort) getFloatSliceField(field string) []float64 {
 	if p[field] == nil {
 		return nil
 	}
-	values := make([]float64, len(p[field].([]interface{})))
+	values := make([]float64, 0, len(p[field].([]interface{})))
 	for _, v := range p[field].([]interface{}) {
 		values = append(values, v.(float64))
 	}

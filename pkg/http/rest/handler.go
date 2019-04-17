@@ -75,7 +75,6 @@ func createPort(manager managing.Service) func(w http.ResponseWriter, r *http.Re
 			Error(w, err)
 			return
 		}
-
 		Created(w, port)
 	}
 }
@@ -104,12 +103,13 @@ func updatePort(manager managing.Service) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		err = manager.UpdatePort(portID)
+		port.ID = portID
+		err = manager.UpdatePort(port)
 		if err != nil {
 			Error(w, err)
 			return
 		}
-		SuccessWithEntity(w, port)
+		NoContent(w)
 	}
 }
 
@@ -123,7 +123,6 @@ func deletePort(manager managing.Service) func(w http.ResponseWriter, r *http.Re
 			Error(w, err)
 			return
 		}
-
 		NoContent(w)
 	}
 }

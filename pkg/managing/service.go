@@ -17,7 +17,7 @@ type Service interface {
 	GetPort(id string) (entities.Port, error)
 	ListPorts(limit, offset uint) ([]entities.Port, error)
 	CreatePort(entities.Port) error
-	UpdatePort(id string) error
+	UpdatePort(port entities.Port) error
 	CreateOrUpdatePorts(...entities.Port) error
 	DeletePort(id string) error
 }
@@ -80,12 +80,13 @@ func (s service) ListPorts(limit, offset uint) ([]entities.Port, error) {
 }
 
 func (s *service) CreatePort(port entities.Port) error {
-	_, err := s.client.CreatePort(context.Background(), proto.DomainToProtoPort(port))
+	p := proto.DomainToProtoPort(port)
+	_, err := s.client.CreatePort(context.Background(), p)
 	return err
 }
 
-func (s *service) UpdatePort(id string) error {
-	_, err := s.client.UpdatePort(context.Background(), &proto.Port{Id: id})
+func (s *service) UpdatePort(port entities.Port) error {
+	_, err := s.client.UpdatePort(context.Background(), proto.DomainToProtoPort(port))
 	return err
 }
 
