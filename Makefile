@@ -1,3 +1,5 @@
+VERSION := 0.1
+
 vendor:
 	@mkdir -p $@
 
@@ -16,10 +18,10 @@ rm-test-svc:
 	./scripts/rm-docker-compose-test.sh
 
 api:
-	docker build -f ./build/api/Dockerfile -t glebova/client-api .
+	docker build -f ./build/api/Dockerfile -t glebova/client-api:$(VERSION) .
 
 repository:
-	docker build -f ./build/repository/Dockerfile -t glebova/port-domain-svc .
+	docker build -f ./build/repository/Dockerfile -t glebova/port-domain-svc:$(VERSION) .
 
 run:
 	./scripts/run-docker-compose.sh
