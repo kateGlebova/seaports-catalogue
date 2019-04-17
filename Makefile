@@ -16,10 +16,10 @@ rm-test-svc:
 	./scripts/rm-docker-compose-test.sh
 
 api:
-	docker build -f ./build/api/Dockerfile -t client-api .
+	docker build -f ./build/api/Dockerfile -t glebova/client-api .
 
 repository:
-	docker build -f ./build/repository/Dockerfile -t port-domain-svc .
+	docker build -f ./build/repository/Dockerfile -t glebova/port-domain-svc .
 
 run:
 	./scripts/run-docker-compose.sh
