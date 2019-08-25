@@ -2,10 +2,9 @@ package managing
 
 import (
 	"context"
+	"github.com/kateGlebova/seaports-catalogue/domain-service/proto"
 	"log"
 	"time"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
 	"google.golang.org/grpc"

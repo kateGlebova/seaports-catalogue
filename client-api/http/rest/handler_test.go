@@ -3,12 +3,11 @@ package rest
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
 	"github.com/stretchr/testify/assert"
@@ -103,12 +102,11 @@ func TestUpdatePort(t *testing.T) {
 		id     string
 		reader io.Reader
 		code   int
-		body   interface{}
+		body   string
 	}{
-		{name: "body reading error", id: "AEAJM", reader: errReader{}, code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: test error"}},
-		{name: "unmarshalling error", id: "AEAJM", reader: strings.NewReader(`{"id":"AEAJM"`), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: unexpected end of JSON input"}},
-		{name: "port ID mismatch", id: "AEAJMD", reader: convertToReader(entities.MockPort), code: http.StatusBadRequest, body: Response{Code: http.StatusBadRequest, Message: "Bad Request: port ID in URL path does not match port ID in body"}},
-		{name: "success", id: "AEAJM", reader: convertToReader(entities.MockPort), code: http.StatusOK, body: entities.MockPort},
+		{name: "body reading error", id: "AEAJM", reader: errReader{}, code: http.StatusBadRequest, body: "{\"code\":400,\"message\":\"Bad Request: test error\"}\n"},
+		{name: "unmarshalling error", id: "AEAJM", reader: strings.NewReader(`{"id":"AEAJM"`), code: http.StatusBadRequest, body: "{\"code\":400,\"message\":\"Bad Request: unexpected end of JSON input\"}\n"},
+		{name: "success", id: "AEAJM", reader: convertToReader(entities.MockPort), code: http.StatusNoContent, body: ""},
 	}
 
 	for _, tc := range testCases {
@@ -117,8 +115,7 @@ func TestUpdatePort(t *testing.T) {
 			response := ExecuteRequest(router, req)
 
 			assert.Equal(t, tc.code, response.Code)
-			expected, _ := json.Marshal(tc.body)
-			assert.Equal(t, string(expected)+"\n", response.Body.String())
+			assert.Equal(t, tc.body, response.Body.String())
 		})
 	}
 }

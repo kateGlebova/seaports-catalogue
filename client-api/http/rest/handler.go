@@ -3,13 +3,13 @@ package rest
 import (
 	"encoding/json"
 	"errors"
+	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
 )
 
 func NewHandler(manager managing.Service) http.Handler {

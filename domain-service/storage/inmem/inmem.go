@@ -1,10 +1,10 @@
 package inmem
 
 import (
+	"github.com/kateGlebova/seaports-catalogue/domain-service/storage"
 	"sync"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
-	"github.com/kateGlebova/seaports-catalogue/pkg/storage"
 )
 
 type Repository struct {

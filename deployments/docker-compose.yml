@@ -7,7 +7,7 @@ services:
       - backend
 
   api:
-    image: "glebova/client-api:0.1"
+    image: "glebova/client-api:0.2"
     ports:
       - "8080:8080"
     restart: on-failure
@@ -19,7 +19,7 @@ services:
       - ${PWD}/../data/:/opt/api/data/
 
   repository:
-    image: "glebova/port-domain-service:0.1"
+    image: "glebova/port-domain-service:0.2"
     restart: on-failure
     depends_on:
       - mongo

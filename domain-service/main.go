@@ -1,12 +1,10 @@
 package main
 
 import (
+	"github.com/kateGlebova/seaports-catalogue/domain-service/proto"
+	"github.com/kateGlebova/seaports-catalogue/domain-service/storage/mongo"
 	"os"
 	"os/signal"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/storage/mongo"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/http/proto"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )
