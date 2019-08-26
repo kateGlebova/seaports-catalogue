@@ -106,6 +106,7 @@ func TestUpdatePort(t *testing.T) {
 	}{
 		{name: "body reading error", id: "AEAJM", reader: errReader{}, code: http.StatusBadRequest, body: "{\"code\":400,\"message\":\"Bad Request: test error\"}\n"},
 		{name: "unmarshalling error", id: "AEAJM", reader: strings.NewReader(`{"id":"AEAJM"`), code: http.StatusBadRequest, body: "{\"code\":400,\"message\":\"Bad Request: unexpected end of JSON input\"}\n"},
+		{name: "port ID mismatch", id: "AEAJMD", reader: convertToReader(entities.MockPort), code: http.StatusBadRequest, body: "{\"code\":400,\"message\":\"Bad Request: port ID in URL path does not match port ID in body\"}\n"},
 		{name: "success", id: "AEAJM", reader: convertToReader(entities.MockPort), code: http.StatusNoContent, body: ""},
 	}
 
