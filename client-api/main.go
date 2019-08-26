@@ -2,15 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/kateGlebova/seaports-catalogue/client-api/http/rest"
+	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
+	"github.com/kateGlebova/seaports-catalogue/client-api/populating"
 	"log"
 	"os"
 	"os/signal"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/populating"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/http/rest"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 )

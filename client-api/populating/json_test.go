@@ -1,12 +1,11 @@
 package populating
 
 import (
+	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
 )
 
 func TestJsonService_Populate(t *testing.T) {

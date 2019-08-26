@@ -2,12 +2,11 @@ package rest
 
 import (
 	"context"
+	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
 	"log"
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/kateGlebova/seaports-catalogue/pkg/managing"
 
 	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
 

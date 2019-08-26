@@ -5,13 +5,13 @@ RUN apk add --no-cache git gcc musl-dev bash
 COPY . /go/src/github.com/kateGlebova/seaports-catalogue/
 WORKDIR /go/src/github.com/kateGlebova/seaports-catalogue/
 
-RUN /go/src/github.com/kateGlebova/seaports-catalogue/build/repository/build.sh
+RUN /go/src/github.com/kateGlebova/seaports-catalogue/build/domain-service/build.sh
 
 
 FROM alpine:3.8
 LABEL description="PortDomainService service"
 
-ENV PATH="/opt/api:${PATH}"
+ENV PATH="/opt/repository:${PATH}"
 RUN apk update && apk --no-cache add ca-certificates curl
 
 COPY --from=repo-builder /app/repository /opt/repository/repository

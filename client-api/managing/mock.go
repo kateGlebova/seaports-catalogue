@@ -22,7 +22,7 @@ func (m MockService) CreatePort(entities.Port) error {
 	return m.Err
 }
 
-func (m MockService) UpdatePort(id string) error {
+func (m MockService) UpdatePort(port entities.Port) error {
 	return m.Err
 }
 
