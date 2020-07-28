@@ -2,10 +2,10 @@ FROM golang:1.12.4-alpine3.9 as api-builder
 
 RUN apk add --no-cache git gcc musl-dev bash
 
-COPY . /go/src/github.com/kateGlebova/seaports-catalogue/
-WORKDIR /go/src/github.com/kateGlebova/seaports-catalogue/
+COPY . /go/src/github.com/ktsymbal/seaports-catalogue/
+WORKDIR /go/src/github.com/ktsymbal/seaports-catalogue/
 
-RUN /go/src/github.com/kateGlebova/seaports-catalogue/build/client-api/build.sh
+RUN /go/src/github.com/ktsymbal/seaports-catalogue/build/client-api/build.sh
 
 
 FROM alpine:3.8

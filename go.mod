@@ -1,4 +1,4 @@
-module github.com/kateGlebova/seaports-catalogue
+module github.com/ktsymbal/seaports-catalogue
 
 go 1.12
 

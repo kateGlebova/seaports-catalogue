@@ -1,7 +1,7 @@
 package proto
 
 import (
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 )
 
 func DomainToProtoPort(port entities.Port) *Port {

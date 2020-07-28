@@ -1,12 +1,12 @@
 package mongo
 
 import (
-	"github.com/kateGlebova/seaports-catalogue/domain-service/storage"
+	"github.com/ktsymbal/seaports-catalogue/domain-service/storage"
 	"log"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 )
 
 // Repository implements CRUD operations with MongoDB

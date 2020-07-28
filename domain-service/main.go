@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kateGlebova/seaports-catalogue/domain-service/proto"
-	"github.com/kateGlebova/seaports-catalogue/domain-service/storage/mongo"
+	"github.com/ktsymbal/seaports-catalogue/domain-service/proto"
+	"github.com/ktsymbal/seaports-catalogue/domain-service/storage/mongo"
 	"os"
 	"os/signal"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
+	"github.com/ktsymbal/seaports-catalogue/pkg/lifecycle"
 )
 
 var (

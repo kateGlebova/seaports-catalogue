@@ -4,9 +4,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/lifecycle"
+	"github.com/ktsymbal/seaports-catalogue/pkg/lifecycle"
 	"google.golang.org/grpc"
 )
 

@@ -1,6 +1,6 @@
 package managing
 
-import "github.com/kateGlebova/seaports-catalogue/pkg/entities"
+import "github.com/ktsymbal/seaports-catalogue/pkg/entities"
 
 type MockService struct {
 	Err   error

@@ -1,7 +1,7 @@
 package populating
 
 import (
-	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
+	"github.com/ktsymbal/seaports-catalogue/client-api/managing"
 	"os"
 	"testing"
 

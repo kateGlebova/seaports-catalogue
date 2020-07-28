@@ -2,9 +2,9 @@ package proto
 
 import (
 	"context"
-	"github.com/kateGlebova/seaports-catalogue/domain-service/storage"
+	"github.com/ktsymbal/seaports-catalogue/domain-service/storage"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

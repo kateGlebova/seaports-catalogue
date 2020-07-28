@@ -1,14 +1,14 @@
 package mongo
 
 import (
-	"github.com/kateGlebova/seaports-catalogue/domain-service/storage"
+	"github.com/ktsymbal/seaports-catalogue/domain-service/storage"
 	"os"
 	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 
 	"github.com/globalsign/mgo"
 )

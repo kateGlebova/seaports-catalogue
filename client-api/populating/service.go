@@ -2,13 +2,13 @@ package populating
 
 import (
 	"errors"
-	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
+	"github.com/ktsymbal/seaports-catalogue/client-api/managing"
 	"log"
 	"os"
 	"sync"
 
 	"github.com/bcicen/jstream"
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 )
 
 type Service interface {

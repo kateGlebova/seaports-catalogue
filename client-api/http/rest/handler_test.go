@@ -3,13 +3,13 @@ package rest
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/kateGlebova/seaports-catalogue/client-api/managing"
+	"github.com/ktsymbal/seaports-catalogue/client-api/managing"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
 
-	"github.com/kateGlebova/seaports-catalogue/pkg/entities"
+	"github.com/ktsymbal/seaports-catalogue/pkg/entities"
 	"github.com/stretchr/testify/assert"
 )
 
